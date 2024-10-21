@@ -18,8 +18,8 @@ class MULTIPEDALPROJECT_API UMultipedalEquipComponent : public UActorComponent
 public:
 	UMultipedalEquipComponent();
 
+	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
-
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -28,7 +28,9 @@ private:
 	TSharedPtr<FStreamableHandle> BodyAssetLoadHandle;
 
 	UPROPERTY(Transient)
-	class UMultipedalDataAsset* MultipedalDataAsset;
+	TObjectPtr<class UMultipedalDataAsset> MultipedalDataAsset;
 
+	void OnPlayerStateChanged(class APlayerState* PlayerState);
+	void EquipBodyAsset(FString ItemId);
 	void PostBodyAssetLoad();
 };

@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "MultipedalPawn.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChanged, class APlayerState*);
+
 /**
  * 
  */
@@ -20,9 +22,18 @@ public:
 	virtual void BeginPlay() override;
 
 protected:
+	virtual void OnPlayerStateChanged(APlayerState* NewPlayerState, APlayerState* OldPlayerState) override;
+
+public:
+	FOnPlayerStateChanged OnPlayerStateChangedNotify;
+
+protected:
 	UPROPERTY(VisibleDefaultsOnly)
-	class USkeletalMeshComponent* BodyMesh;
+	TObjectPtr<class USkeletalMeshComponent> BodyMesh;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	class UMultipedalEquipComponent* EquipComp;
+	TObjectPtr<class UMultipedalEquipComponent> EquipComp;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class UMultipedalMovementComponent> MovementComp;
 };
