@@ -5,13 +5,21 @@
 #include "MultipedalEquipComponent.h"
 #include "MultipedalMovementComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/PlayerState.h"
 
 AMultipedalPawn::AMultipedalPawn()
 {
-	BodyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BodyMesh"));
-	SetRootComponent(BodyMesh);
-	BodyMesh->bAlwaysCreatePhysicsState = true;
+	//SkeletalMesh is not facing front side. So use boxcomponent as root primitive;
+	BodyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BodyCollisionBox"));
+	SetRootComponent(BodyCollisionBox);
+	BodyCollisionBox->bAlwaysCreatePhysicsState = true;
+	
+
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));	
+	SkeletalMesh->bAlwaysCreatePhysicsState = true;
+	SkeletalMesh->SetupAttachment(BodyCollisionBox);
+	SkeletalMesh->PhysicsTransformUpdateMode = EPhysicsTransformUpdateMode::ComponentTransformIsKinematic;
 
 	EquipComp = CreateDefaultSubobject<UMultipedalEquipComponent>(TEXT("Equip"));
 

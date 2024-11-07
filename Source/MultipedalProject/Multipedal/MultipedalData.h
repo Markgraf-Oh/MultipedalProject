@@ -12,25 +12,33 @@ struct FPedalDefinition
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	FName EndBoneName;
 
-	UPROPERTY()
-	float UpwardRange;
-	 
-	UPROPERTY()
-	float DownwardRange;
+	UPROPERTY(EditDefaultsOnly)
+	FName RootBoneName;
 
-	UPROPERTY()
-	float MoveThreshold;
-
-	UPROPERTY()
+	//BodyInstance에 대한 상대위치
+	UPROPERTY(EditDefaultsOnly)
 	FVector InitialRelativeLocation;
 
-	UPROPERTY()
+	//BodyInstance에 대한 상대위치
+	UPROPERTY(EditDefaultsOnly)
+	FVector RootRelativeLocation;
+
+	UPROPERTY(EditDefaultsOnly)
+	float UpwardRange;
+	 
+	UPROPERTY(EditDefaultsOnly)
+	float DownwardRange;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MoveThreshold;
+
+	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<class UCurveFloat> VerticalCurve;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<class UCurveFloat> ProgressCurve;
 };
 
@@ -51,19 +59,27 @@ struct FPedal
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FPedalDefinition Def;
 
-	UPROPERTY()
+	//(kg * cm/(s^2))/cm
+	UPROPERTY(VisibleAnywhere)
+	float VirticalSuspension;
+
+	//(kg * cm/(s^2))/cm
+	UPROPERTY(VisibleAnywhere)
+	float HorizontalSuspension;
+
+	UPROPERTY(VisibleAnywhere)
 	EPedalState MovementState;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	bool bOnWall;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FVector StartLocation;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FVector TargetLocation;
 };
 
@@ -94,4 +110,21 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Pedal")
 	TArray<FPedalDefinition> PedalDefList;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FTransform MeshRelativeTransform;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FVector BoxCollisionExtent;
+
+	// cm/(s^2)  110 = 8초에 시속 32km/h 수준
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float Acceleration = 110.0f;
+
+#if WITH_EDITORONLY_DATA
+	UFUNCTION(CallInEditor, Category = "Util")
+	void MeasurePedalProperties();
+
+	FVector GetBoneDefaultLocation(USkeletalMesh* SkeletalMesh, FName BoneName);
+#endif
 };

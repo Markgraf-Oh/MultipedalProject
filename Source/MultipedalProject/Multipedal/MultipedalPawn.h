@@ -29,7 +29,10 @@ public:
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<class USkeletalMeshComponent> BodyMesh;
+	TObjectPtr<class UBoxComponent> BodyCollisionBox;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class USkeletalMeshComponent> SkeletalMesh;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<class UMultipedalEquipComponent> EquipComp;

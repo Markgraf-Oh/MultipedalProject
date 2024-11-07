@@ -5,6 +5,7 @@
 #include "MultipedalData.h"
 #include "Engine/AssetManager.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/BoxComponent.h"
 #include "MultipedalPawn.h"
 #include "MultipedalMovementComponent.h"
 #include "GameFramework/PlayerState.h"
@@ -63,12 +64,28 @@ void UMultipedalEquipComponent::PostBodyAssetLoad()
 		MultipedalDataAsset = AssetManager->GetPrimaryAssetObject<UMultipedalDataAsset>(MultipedalPrimaryAssetId);
 		if (IsValid(MultipedalDataAsset))
 		{
+			UBoxComponent* OwnerBodyBox = Cast<UBoxComponent>(GetOwner()->GetRootComponent());
+			if (IsValid(OwnerBodyBox))
+			{
+				OwnerBodyBox->SetBoxExtent(MultipedalDataAsset->BoxCollisionExtent);
+				OwnerBodyBox->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
+				OwnerBodyBox->SetMassOverrideInKg(NAME_None, 500.0f, true);
+				OwnerBodyBox->SetLinearDamping(0.1f);
+				OwnerBodyBox->SetAngularDamping(0.1f);
+				OwnerBodyBox->SetSimulatePhysics(true);
+			}
+
 			USkeletalMeshComponent* OwnerSkeletal = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 			if (IsValid(OwnerSkeletal) && MultipedalDataAsset->Mesh.IsValid())
 			{
+				OwnerSkeletal->SetRelativeTransform(MultipedalDataAsset->MeshRelativeTransform);
 				OwnerSkeletal->SetSkeletalMesh(MultipedalDataAsset->Mesh.Get());
-				OwnerSkeletal->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
-				OwnerSkeletal->SetSimulatePhysics(true);
+				//OwnerSkeletal->PhysicsTransformUpdateMode = EPhysicsTransformUpdateMode::ComponentTransformIsKinematic;
+				//OwnerSkeletal->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
+				OwnerSkeletal->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+				//physical constraint를 사용하면 simulation을 하면서 attach를 유지할 수 있지만, 이는 오버스펙으로 판단함
+				OwnerSkeletal->SetSimulatePhysics(false);
 			}
 
 			UMultipedalMovementComponent* Movement = GetOwner()->FindComponentByClass<UMultipedalMovementComponent>();
