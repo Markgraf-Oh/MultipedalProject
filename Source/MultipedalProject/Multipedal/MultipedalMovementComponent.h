@@ -31,8 +31,33 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FPedal> PedalList;
 
-	FCollisionQueryParams GroundCollisionQueryParams;
-	FCalculateCustomPhysics CalculateCustomPhysics;
+	FVector COMOffset;
+	float TotalMassKg = 1000.0f;
 
+	// cm/s^2
+	const float GravityAccel = 980.0f;
+	constexpr float GetConstGravityAccel() { return GravityAccel; }
+
+	FVector GetGravityVector()
+	{
+		return GetGravityZ() * FVector::ZAxisVector;
+	}
+
+	FCollisionQueryParams GroundCollisionQueryParams;
+
+	//PhysicsTickValue
+	FVector TotalForce;
+	FVector TotalTorque;
+	FVector LinearVelocity;
+	FVector AngularVelocity;
+	FVector COMWorldLocation;
+	FTransform BodyTransform;
+
+	//PhysicsTick
+	FCalculateCustomPhysics CalculateCustomPhysics;
 	void CustomPhysicsSubstepTick(float DeltaTime, FBodyInstance* BodyInstance);
+
+	void BeginForceCalc(float DeltaTime, FBodyInstance* BodyInstance);
+	void CalcVerticalSuspentionForce(float DeltaTime, FBodyInstance* BodyInstance);
+	void ApplyForceCalc(float DeltaTime, FBodyInstance* BodyInstance);
 };
